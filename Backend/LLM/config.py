@@ -1,0 +1,7 @@
+import os
+
+JWT_SECRET = os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+GATEWAY_URL = "http://gateway:8000"

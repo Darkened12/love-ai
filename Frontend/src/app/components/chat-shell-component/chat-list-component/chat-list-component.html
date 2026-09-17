@@ -1,0 +1,56 @@
+<div class="offcanvas offcanvas-start" 
+  tabindex="-1" id="chatList" 
+  aria-labelledby="offcanvasExampleLabel"
+  data-bs-scroll="true"
+  
+  data-bs-backdrop="false">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasExampleLabel"><b>Chats</b></h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <button class="btn btn-primary" (click)="onCreateButtonPress()">Create New Chat</button>
+    <hr>
+    <ul class="list-group">
+      @for (chat of chatsList(); track chat.id; let i = $index) {
+        @if (i === 0) {
+
+          <div class="d-flex align-items-center gap-1 mt-1">
+            <button class="btn btn-primary flex-grow-1 text-start text-truncate title-btn"
+              data-bs-dismiss="offcanvas" 
+              (click)="onChatClick(chat)">{{ chat.title }}</button>
+
+            <button class="btn btn-outline-secondary btn-sm flex-shrink-0"
+             (click)="openRenameModal(chat)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="btn btn-outline-danger btn-sm flex-shrink-0" 
+              (click)="openDeleteModal(chat)">
+              <i class="bi bi-trash3"></i>
+            </button>
+
+          </div>          
+          
+        } @else {
+          <div class="d-flex align-items-center gap-1 mt-1">
+            <button class="btn btn-outline-primary flex-grow-1 text-start text-truncate title-btn" 
+              data-bs-dismiss="offcanvas" 
+              (click)="onChatClick(chat)">{{ chat.title }}</button>
+
+            <button class="btn btn-outline-secondary btn-sm flex-shrink-0"
+              (click)="openRenameModal(chat)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="btn btn-outline-danger btn-sm flex-shrink-0" (click)="openDeleteModal(chat)"><i class="bi bi-trash3"></i></button>
+          
+          </div>
+
+
+        }
+        
+      }
+    </ul>
+  </div>
+</div>

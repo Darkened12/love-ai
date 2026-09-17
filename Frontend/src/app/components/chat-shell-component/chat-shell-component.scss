@@ -1,0 +1,8 @@
+.scroll-bottom {
+  position: fixed;
+  bottom: 90px; // above your input bar
+  right: 24px;
+  width: 50px;
+  height: 50px;
+  z-index: 1000;
+}

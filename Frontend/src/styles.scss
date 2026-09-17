@@ -1,0 +1,49 @@
+@import 'highlight.js/styles/github-dark.css';
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+.chat-container {
+  overflow-x: hidden;
+}
+
+.message-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.message-body {
+  max-width: 70%;
+  min-width: 0;
+}
+
+.message-content {
+  width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.message-content markdown {
+  display: block;
+  width: 100%;
+}
+
+.message-content markdown p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.message-content markdown pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.message-content markdown code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

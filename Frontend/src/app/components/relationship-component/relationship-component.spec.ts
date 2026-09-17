@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { RelationshipComponent } from './relationship-component';
+
+describe('RelationshipComponent', () => {
+  let component: RelationshipComponent;
+  let fixture: ComponentFixture<RelationshipComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [RelationshipComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(RelationshipComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

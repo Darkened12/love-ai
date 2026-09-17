@@ -1,0 +1,29 @@
+<div class="toast-container position-fixed top-50 start-50 translate-middle">
+  @if (saveSuccess$ | async) {
+    <div class="toast show">
+      <div class="toast-header">
+        <strong class="me-auto">Success!</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        System prompt updated successfully.
+      </div>
+    </div>
+  }
+</div>
+
+<div class="container mr-2 ml-2">
+    <label for="system_prompt" class="form-label">System Prompt</label>
+    <textarea
+        id="system_prompt"
+        class="form-control"
+        name="system_prompt"
+        maxlength="5000"
+        rows="12"
+        [(ngModel)]="systemPrompt"
+    >
+        {{ userProfile()?.system_prompt }}
+    </textarea>
+    <button class="btn btn-primary mt-4" (click)="savePrompt()">Save Changes</button>
+    
+</div>

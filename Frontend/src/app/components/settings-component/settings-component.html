@@ -1,0 +1,19 @@
+<div class="d-flex flex-column vh-100">
+    <div class="p-2 border-bottom bg-white">
+        <app-navbar-component></app-navbar-component>
+    </div>
+
+    <div class="row mt-4">
+        <app-profile-pic-component 
+        [userProfile]="userProfile$ | async"
+        (updatedUserProfilePicture)="onProfilePictureUpdated($event)"
+        (updatedAssistantProfilePicture)="onProfilePictureUpdated($event)"
+        ></app-profile-pic-component>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+        <app-system-prompt-component [userProfile]="userProfile$ | async"></app-system-prompt-component>
+    </div>
+</div> 

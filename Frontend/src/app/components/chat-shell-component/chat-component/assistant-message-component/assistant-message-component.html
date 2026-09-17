@@ -1,0 +1,39 @@
+<div class="message-row assistant">
+  <img class="avatar" [src]="userProfile.assistant_profile_picture || '/images/user.png'" alt="assistant" />
+
+  <div class="message-body">
+    <div class="message-header">Assistant</div>
+
+    @if (message.content) {
+      <div class="message-content">
+        <markdown [data]="message.content"></markdown>
+      </div>
+      @if (isLast && !(isStreaming$ | async)) {
+          <div class="refresh-row">
+            <button
+              (click)="onRefresh()"
+              type="button"
+              class="btn btn-secondary btns refresh-btn d-flex justify-content-center align-items-center"
+            >
+              <img class="image-btn" src="images/refresh.png" alt="refresh">
+            </button>
+          </div>
+      }
+    } @else {
+      <div class="message-content placeholder-content">
+        <p class="card-text placeholder-glow">
+          <span class="placeholder col-7"></span>
+          <span class="placeholder col-4"></span>
+          <span class="placeholder col-4"></span>
+          <span class="placeholder col-6"></span>
+          <span class="placeholder col-8"></span>
+          <span class="placeholder col-7"></span>
+          <span class="placeholder col-4"></span>
+          <span class="placeholder col-4"></span>
+          <span class="placeholder col-6"></span>
+          <span class="placeholder col-8"></span>
+        </p>
+      </div>
+    }
+  </div>
+</div>

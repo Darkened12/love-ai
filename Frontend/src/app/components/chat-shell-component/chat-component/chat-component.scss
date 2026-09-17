@@ -1,0 +1,18 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  max-width: 800px;
+  margin: 0 auto;
+
+  padding: 16px;
+}
+
+.chat-container {
+  overflow-x: hidden;
+}
+
+.create-button {
+  height: 50vh;
+}

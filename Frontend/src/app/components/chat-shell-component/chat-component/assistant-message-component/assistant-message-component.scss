@@ -1,0 +1,86 @@
+markdown {
+  display: block;
+}
+
+.message-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.message-body {
+  max-width: 70%;
+  min-width: 0; /* prevents overflow */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.message-header {
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #888;
+}
+
+.message-content {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  width: 100%;
+}
+
+/* Markdown fixes */
+.message-content markdown {
+  display: block;
+}
+
+.message-content * {
+  max-width: 100%;
+}
+
+.message-content pre {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Button container (NEW) */
+.refresh-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+/* Button */
+.btns {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  padding: 0;
+}
+
+/* Icon */
+.image-btn {
+  height: 18px;
+  width: 18px;
+}
+
+.placeholder-content {
+  width: 80vw;
+}

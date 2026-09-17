@@ -1,0 +1,11 @@
+<div class="message-row user">
+  <img class="avatar" [src]="userProfile.profile_picture || '/images/user.png'"/>
+
+  <div class="message-body">
+    <div class="message-header">{{ userProfile.username }}</div>
+
+    <div class="message-content">
+      {{ message.content }}
+    </div>
+  </div>
+</div>

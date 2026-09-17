@@ -1,0 +1,73 @@
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  @if (uploadSuccess$ | async) {
+    <div class="toast show">
+      <div class="toast-header">
+        <strong class="me-auto">Success!</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        Profile picture updated successfully.
+      </div>
+    </div>
+  }
+</div>
+
+<div class="container d-flex justify-content-center">
+  <div class="row">
+    <div class="col-6">
+      <p>User Profile Picture</p>
+      <div class="image-container rounded-3 overflow-hidden">
+        @if (userProfile()) {
+          <img [src]="userProfile()!.profile_picture" alt="Profile picture">
+        }
+        @else {
+          <img src="http://localhost:8000/media/profile_pics/goose.jpg" alt="Profile picture">
+        }
+      </div>
+
+      <div class="row mt-3 justify-content-center">
+        <div class="col-auto">
+          <input
+            #userInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onUserProfilePictureSelected($event)"
+          >
+          <button class="btn btn-primary" (click)="userInput.click()">
+            Update Picture
+          </button>
+        </div>
+      </div>    
+    </div>
+
+  <div class="col-6">
+    <p>Assistant Profile Pic</p>
+    <div class="image-container rounded-3 overflow-hidden">
+        @if (userProfile()) {
+          <img [src]="userProfile()!.assistant_profile_picture" alt="Profile picture">
+        }
+        @else {
+          <img src="http://localhost:8000/media/profile_pics/goose.jpg" alt="Profile picture">
+        }
+      </div>
+
+      <div class="row mt-3 justify-content-center">
+        <div class="col-auto">
+          <input
+            #assistantInput
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onAssistantProfilePictureSelected($event)"
+          >
+          <button class="btn btn-primary" (click)="assistantInput.click()">
+            Update Picture
+          </button>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+</div>

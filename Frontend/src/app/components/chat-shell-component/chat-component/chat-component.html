@@ -1,0 +1,45 @@
+<div #chatContainer class="chat-container">
+
+  @if (userProfile(); as profile) {
+    
+    @if (messages$ | async; as messages) {
+
+      @for (message of messages; track message.id; let i = $index) {
+
+        @if (message.role === 'user') {      
+          <app-user-message-component
+            [message]="message"
+            [userProfile]="profile">
+          </app-user-message-component>
+        } @else {
+          <app-assistant-message-component
+            [message]="message"
+            [chatId]="chatId()"
+            [isLast]="i === messages.length - 1"
+            [userProfile]="profile"
+            >
+          </app-assistant-message-component>
+        }
+
+      }
+
+    }
+  }
+
+</div>
+
+@if (loading$ | async) {
+  <div class="d-flex justify-content-center align-items-center" style="height: 70vh;">
+    <div class="spinner-border text-primary" role="status" style="height: 60px; width: 60px;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+}
+
+@if (chatsList()?.length === 0) {
+  <div class="create-button d-flex flex-column align-items-center justify-content-center">
+    <h1>No chats. Create one.</h1>
+    <button type="button" class="btn btn-primary mt-2" (click)="onCreateButtonPress()">Create a chat</button>
+  </div>
+}
