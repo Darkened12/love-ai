@@ -46,6 +46,13 @@ export class ChatService {
     );
   }
 
+  cleanUp () {
+    this.chatsSubject.next([]);
+    this.currentChatSubject.next(null);
+    this.chatId.next('');
+    this.messagesSubject.next([]);
+  }
+
   doEmptyMessages() {
     this.messagesSubject.next([]);
   }

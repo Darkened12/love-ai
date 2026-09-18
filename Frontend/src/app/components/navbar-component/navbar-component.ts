@@ -40,6 +40,7 @@ export class NavbarComponent {
 
   logout() {
     this.auth.logout();
+    this.chatService.cleanUp();
     this.router.navigate(['/login']);
   }
 }
