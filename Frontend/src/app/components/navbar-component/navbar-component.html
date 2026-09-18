@@ -21,7 +21,7 @@
           <a class="nav-link" routerLink="/memory">Memory Manager</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/relationship">Relationship</a>
+          <button class="nav-link" (click)="onRelationshipPress()">Relationship</button>
         </li>
         <li class="nav-item">
           <button class="nav-link active" aria-current="page" href="#" (click)="logout()">Logout</button>
@@ -30,3 +30,5 @@
     </div>
   </div>
 </nav>
+
+<app-relationship-modal-component [(showRelationshipModal)]="showRelationshipModal"></app-relationship-modal-component>

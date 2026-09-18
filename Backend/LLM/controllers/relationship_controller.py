@@ -31,7 +31,7 @@ class RelationshipController:
         )
         return async_session
 
-    async def get_relationship(self, user_id: int) -> UserRelationship | None:
+    async def get_or_create_relationship(self, user_id: int) -> UserRelationship:
         async with self.session_factory() as session:
             result = await session.execute(
                 select(UserRelationship).where(
@@ -39,7 +39,19 @@ class RelationshipController:
                 )
             )
 
-            return result.scalar_one_or_none()
+            relationship = result.scalar_one_or_none()
+
+            if relationship is None:
+                relationship = UserRelationship(
+                    user_id=user_id,
+                    affection=50,
+                    trust=50,
+                    comfort=50,
+                )
+                session.add(relationship)
+                await session.commit()
+
+            return relationship
 
     async def reset_relationship(self, user_id: int):
         async with self.session_factory() as session:

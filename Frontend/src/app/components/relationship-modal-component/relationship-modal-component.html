@@ -1,2 +1,70 @@
-<app-navbar-component></app-navbar-component>
-<button class="btn btn-danger" (click)="onResetPress()">Reset Relationship</button>
+@if (showRelationshipModal()) {
+  <div class="modal-backdrop fade show"></div>
+
+  <div class="modal d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title">Relationship</h5>
+          </div>
+
+          <div class="modal-body">
+            @if (relationship$ | async; as relationship) {
+                <div class="mb-3">
+                    <label class="form-label">Affection</label>
+                    <div class="progress">
+                    <div
+                        class="progress-bar bg-danger"
+                        role="progressbar"
+                        [style.width.%]="relationship.affection"
+                        [attr.aria-valuenow]="relationship.affection"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+                        {{ relationship.affection }}%
+                    </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Trust</label>
+                    <div class="progress">
+                    <div
+                        class="progress-bar bg-primary"
+                        role="progressbar"
+                        [style.width.%]="relationship.trust"
+                        [attr.aria-valuenow]="relationship.trust"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+                        {{ relationship.trust }}%
+                    </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Comfort</label>
+                    <div class="progress">
+                    <div
+                        class="progress-bar bg-success"
+                        role="progressbar"
+                        [style.width.%]="relationship.comfort"
+                        [attr.aria-valuenow]="relationship.comfort"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+                        {{ relationship.comfort }}%
+                    </div>
+                    </div>
+                </div>
+            }
+          </div>
+
+          <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onClose()">
+              Cancel
+          </button>
+          <button class="btn btn-danger" (click)="onResetPress()">Reset Relationship</button>
+          </div>
+      </div>
+      </div>
+  </div>
+}
+

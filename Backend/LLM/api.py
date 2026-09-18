@@ -127,7 +127,7 @@ async def stream_response(
     long_term_context = await _memory_controller.persistent_memory.retrieve(chat_id, message)
 
     # Retrieve relationship
-    relationship = await _relationship_controller.get_relationship(user_id)
+    relationship = await _relationship_controller.get_or_create_relationship(user_id)
 
     # Prompt building
     if system_prompt is None:
@@ -298,7 +298,7 @@ async def get_relationship(request: Request):
     if user_id is None:
         raise HTTPException(400, "user_id is required")
 
-    relationship = await _relationship_controller.get_relationship(int(user_id))
+    relationship = await _relationship_controller.get_or_create_relationship(int(user_id))
 
     if relationship is None:
         raise HTTPException(404, "Relationship not found")

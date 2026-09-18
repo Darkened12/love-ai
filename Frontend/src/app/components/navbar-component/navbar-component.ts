@@ -7,16 +7,18 @@ import { BehaviorSubject } from 'rxjs';
 import { ChatService } from '../../services/chat-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
+import { RelationshipModalComponent } from '../relationship-modal-component/relationship-modal-component';
 
 @Component({
   selector: 'app-navbar-component',
   standalone: true,
-  imports: [RouterLink, AsyncPipe],
+  imports: [RouterLink, AsyncPipe, RelationshipModalComponent],
   templateUrl: './navbar-component.html',
   styleUrl: './navbar-component.scss',
 })
 export class NavbarComponent {
   private currentChat = new BehaviorSubject<Chat | null>(null);
+  showRelationshipModal = false;
   currentChat$ = this.currentChat.asObservable();
 
   constructor(private auth: AuthService,
@@ -30,6 +32,10 @@ export class NavbarComponent {
 
   getCurrentRoute(): string {
     return this.router.url
+  }
+
+  onRelationshipPress() {
+    this.showRelationshipModal = true;
   }
 
   logout() {
