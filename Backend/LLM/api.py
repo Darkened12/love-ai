@@ -16,7 +16,7 @@ from services.relationship import RelationshipService
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(env_path)
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import Response, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -291,6 +291,23 @@ async def delete_memory(request: Request) -> Response:
 
     return Response(status_code=204)
 
+@app.get('/get_relationship')
+async def get_relationship(request: Request):
+    user_id = request.query_params.get('user_id')
+
+    if user_id is None:
+        raise HTTPException(400, "user_id is required")
+
+    relationship = await _relationship_controller.get_relationship(int(user_id))
+
+    if relationship is None:
+        raise HTTPException(404, "Relationship not found")
+
+    return {
+        "affection": relationship.affection,
+        "trust": relationship.trust,
+        "comfort": relationship.comfort
+    }
 
 @app.delete('/reset_relationship')
 async def reset_relation(request: Request) -> Response:

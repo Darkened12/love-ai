@@ -56,6 +56,12 @@ async def regenerate_message(request: RegenerateMessageResponse,
     )
 
 
+@router.get('/get_relationship')
+async def get_relation(request: Request, user=Depends(jwt_decode)) -> Response:
+    user_id = request.query_params.get("user_id")
+    return await forward_request(request, f"{LLM_URL}/get_relationship?user_id={user_id}")
+
+
 @router.delete('/reset_relationship')
 async def reset_relation(request: Request, user=Depends(jwt_decode)) -> Response:
     user_id = request.query_params.get("user_id")
