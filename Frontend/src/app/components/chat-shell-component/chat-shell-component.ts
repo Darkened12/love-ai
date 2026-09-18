@@ -30,11 +30,11 @@ import { ChatRenameModalComponent } from './chat-rename-modal-component/chat-ren
   styleUrl: './chat-shell-component.scss',
 })
 export class ChatShellComponent {
-  userProfile = new BehaviorSubject<UserProfile | null>(null);
+  private userProfile = new BehaviorSubject<UserProfile | null>(null);
   userProfile$ = this.userProfile.asObservable();
-  chatsList = new BehaviorSubject<Chat[]>([]);
+  private chatsList = new BehaviorSubject<Chat[]>([]);
   chatsList$ = this.chatsList.asObservable();
-  chatId = new BehaviorSubject<string>('');
+  private chatId = new BehaviorSubject<string>('');
   chatId$ = this.chatId.asObservable();
 
 

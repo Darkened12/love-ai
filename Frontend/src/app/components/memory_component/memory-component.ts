@@ -13,9 +13,9 @@ import { AsyncPipe, DatePipe } from '@angular/common';
   styleUrl: './memory-component.scss',
 })
 export class MemoryComponent {
-  memoryListSubject = new BehaviorSubject<Memory[]>([]);
+  private memoryListSubject = new BehaviorSubject<Memory[]>([]);
   memoryList$ = this.memoryListSubject.asObservable();
-  loadingSubject = new BehaviorSubject<boolean>(true);
+  private loadingSubject = new BehaviorSubject<boolean>(true);
   loading$ = this.loadingSubject.asObservable();
 
   selectedMemory!: Memory

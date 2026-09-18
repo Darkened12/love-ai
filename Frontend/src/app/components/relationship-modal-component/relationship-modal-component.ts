@@ -15,10 +15,10 @@ import { AsyncPipe } from '@angular/common';
 export class RelationshipModalComponent {
   showRelationshipModal = model<boolean>(false);
 
-  userSubject = new BehaviorSubject<UserProfile | null>(null);
+  private userSubject = new BehaviorSubject<UserProfile | null>(null);
   user$ = this.userSubject.asObservable();
 
-  relationshipSubject = new BehaviorSubject<RelationshipModel | null>(null);
+  private relationshipSubject = new BehaviorSubject<RelationshipModel | null>(null);
   relationship$ = this.relationshipSubject.asObservable();
 
   constructor(private userService: UserService, private relationService: RelationshipService) {}
