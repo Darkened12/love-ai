@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RelationshipComponent } from './relationship-component';
+import { RelationshipModalComponent } from './relationship-modal-component';
 
 describe('RelationshipComponent', () => {
-  let component: RelationshipComponent;
-  let fixture: ComponentFixture<RelationshipComponent>;
+  let component: RelationshipModalComponent;
+  let fixture: ComponentFixture<RelationshipModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RelationshipComponent],
+      imports: [RelationshipModalComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RelationshipComponent);
+    fixture = TestBed.createComponent(RelationshipModalComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

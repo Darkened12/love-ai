@@ -5,7 +5,6 @@ import { ChatShellComponent } from './components/chat-shell-component/chat-shell
 import { loginGuard } from './guards/login.guard';
 import { SettingsComponent } from './components/settings-component/settings-component';
 import { MemoryComponent } from './components/memory_component/memory-component';
-import { RelationshipComponent } from './components/relationship-component/relationship-component';
 
 
 export const routes: Routes = [
@@ -13,6 +12,5 @@ export const routes: Routes = [
     { path: 'app', component: ChatShellComponent, canActivate: [authGuard]},
     { path: 'memory', component: MemoryComponent, canActivate: [authGuard]},
     { path: 'settings', component: SettingsComponent, canActivate: [authGuard]},
-    { path: 'relationship', component: RelationshipComponent, canActivate: [authGuard]},
     { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];

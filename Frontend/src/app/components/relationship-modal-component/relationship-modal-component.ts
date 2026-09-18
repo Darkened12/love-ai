@@ -8,10 +8,10 @@ import { RelationshipService } from '../../services/relationship-service';
 @Component({
   selector: 'app-relationship-component',
   imports: [NavbarComponent],
-  templateUrl: './relationship-component.html',
-  styleUrl: './relationship-component.scss',
+  templateUrl: './relationship-modal-component.html',
+  styleUrl: './relationship-modal-component.scss',
 })
-export class RelationshipComponent {
+export class RelationshipModalComponent {
   userSubject = new BehaviorSubject<UserProfile | null>(null);
   user$ = this.userSubject.asObservable()
 
