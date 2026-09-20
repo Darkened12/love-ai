@@ -37,8 +37,9 @@
             ></app-chat-component>
     </div>
     <!-- INPUT -->
-    <div class="p-2 border-top bg-white">
+    <div class="d-flex justify-content-center">
         <app-input-component
+         class="border bg-white message-input"
          [userProfile]="userProfile$ | async"
          [chatId]="chatId$ | async"
          ></app-input-component>
