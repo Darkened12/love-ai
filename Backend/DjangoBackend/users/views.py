@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from config import GATEWAY_URL
 
+from users.models import User
+
 
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -63,3 +65,16 @@ class UserView(APIView):
                 if user.assistant_profile_picture else None
             ),
         })
+
+
+class UserLastMessageAtView(APIView):
+    def get(self, request):
+        users = User.objects.filter(last_message_at__isnull=False)
+
+        return Response([
+            {
+                "id": user.id,
+                "last_message_at": user.last_message_at
+            }
+            for user in users
+        ])

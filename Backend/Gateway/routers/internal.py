@@ -37,3 +37,8 @@ async def create_chat_title(request: Request):
         status_code=chat_ownership_response.status_code,
         media_type=chat_ownership_response.headers.get("content-type"),
     )
+
+
+@router.get("/get_users_last_message_at")
+async def get_last_message_at(request: Request):
+    return await forward_request(request, f"{DJANGO_URL}/users/get_users_last_message_at/")
