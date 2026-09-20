@@ -21,6 +21,9 @@ export class RelationshipModalComponent {
   private relationshipSubject = new BehaviorSubject<RelationshipModel | null>(null);
   relationship$ = this.relationshipSubject.asObservable();
 
+  private resetSuccess = new BehaviorSubject(false);
+  resetSuccess$ = this.resetSuccess.asObservable();
+
   constructor(private userService: UserService, private relationService: RelationshipService) {}
 
   ngOnInit() {
@@ -35,9 +38,12 @@ export class RelationshipModalComponent {
     const user = this.userSubject.value
     if (!user) return;
 
+    this.resetSuccess.next(false);
+
     this.relationService.resetRelationship(user.id).pipe(
       switchMap(() => this.relationService.getRelationship(user.id)),
-      tap(relationship => this.relationshipSubject.next(relationship))
+      tap(relationship => this.relationshipSubject.next(relationship)),
+      tap(() => this.resetSuccess.next(true))
     ).subscribe();
   }
 

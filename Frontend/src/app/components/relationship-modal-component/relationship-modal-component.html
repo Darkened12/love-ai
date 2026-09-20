@@ -68,3 +68,16 @@
   </div>
 }
 
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+  @if (resetSuccess$ | async) {
+    <div class="toast show">
+      <div class="toast-header">
+        <strong class="me-auto">Success!</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        Relationship reseted successfully.
+      </div>
+    </div>
+  }
+</div>
