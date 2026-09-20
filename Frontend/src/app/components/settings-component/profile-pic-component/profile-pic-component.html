@@ -1,16 +1,16 @@
-<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
-  @if (uploadSuccess$ | async) {
-    <div class="toast show">
-      <div class="toast-header">
-        <strong class="me-auto">Success!</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+@if (uploadSuccess$ | async) {
+  <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+      <div class="toast show">
+        <div class="toast-header">
+          <strong class="me-auto">Success!</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Profile picture updated successfully.
+        </div>
       </div>
-      <div class="toast-body">
-        Profile picture updated successfully.
-      </div>
-    </div>
-  }
-</div>
+  </div>
+}
 
 <div class="container d-flex justify-content-center">
   <div class="row">
