@@ -97,13 +97,18 @@ class ChatDateUpdate(APIView):
         if not chat_id:
             return Response({"error": "chat_id is required"}, status=400)
 
-        chat = request.user.chats.filter(id=chat_id).first()
+        user = request.user
+        chat = user.chats.filter(id=chat_id).first()
 
         if not chat:
             return Response({"error": "Chat not found"}, status=404)
 
-        chat.last_updated_at = timezone.now()
+        new_date = timezone.now()
+        chat.last_updated_at = new_date
+        user.last_message_at = new_date
+
         chat.save(update_fields=["last_updated_at"])
+        user.save(update_fields=["last_message_at"])
 
         return Response(status=204)
 

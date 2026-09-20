@@ -15,3 +15,4 @@ class User(AbstractUser):
     system_prompt = models.TextField(max_length=3000, null=False, default=read_system_prompt)
     profile_picture = models.ImageField(upload_to="profile_pics/", null=True)
     assistant_profile_picture = models.ImageField(upload_to="profile_pics/", null=True)
+    last_message_at = models.DateTimeField(null=True, db_index=True)
