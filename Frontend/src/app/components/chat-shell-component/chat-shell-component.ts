@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, Injector, runInInjectionContext, afterNextRender } from '@angular/core';
 import { InputComponent } from './input_component/input-component';
 import { NavbarComponent } from '../navbar-component/navbar-component';
 import { ChatComponent } from './chat-component/chat-component';
@@ -29,7 +29,7 @@ import { ChatRenameModalComponent } from './chat-rename-modal-component/chat-ren
   templateUrl: './chat-shell-component.html',
   styleUrl: './chat-shell-component.scss',
 })
-export class ChatShellComponent {
+export class ChatShellComponent implements AfterViewInit {
   private userProfile = new BehaviorSubject<UserProfile | null>(null);
   userProfile$ = this.userProfile.asObservable();
   private chatsList = new BehaviorSubject<Chat[]>([]);
@@ -48,7 +48,7 @@ export class ChatShellComponent {
 
   constructor(
       private userService: UserService,
-      private auth: AuthService,
+      private injector: Injector,
       private chatService: ChatService
     ) {
     this.chatService.chatId$.pipe(takeUntilDestroyed()).subscribe(
@@ -163,5 +163,18 @@ export class ChatShellComponent {
         this.chatService.onUpdateCurrentChat(chats[0]);
       }
     );
+  }
+
+  ngAfterViewInit() {
+    this.chatService.messages$.subscribe(() => {
+      runInInjectionContext(this.injector, () => {
+        afterNextRender(() => {
+          requestAnimationFrame(() => {
+            const el = this.scrollContainer.nativeElement;
+            el.scrollTop = el.scrollHeight;
+          });
+        });
+      });
+    });
   }
 }
