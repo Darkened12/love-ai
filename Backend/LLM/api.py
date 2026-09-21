@@ -1,6 +1,6 @@
 import asyncio
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -70,6 +70,27 @@ async def generate_title(user_id: int, chat_id: str) -> str:
     return title
 
 
+async def get_user_last_message_at(user_id: int) -> str:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            f"{GATEWAY_URL}/internal/get_user_last_message_at",
+            params={
+                "user_id": user_id
+            }
+        )
+
+        content = response.json()
+        return content['last_message_at']
+
+
+def parse_api_datetime(value: str) -> datetime:
+    if value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    elif value.endswith("+00"):
+        value = value[:-3] + "+00:00"
+
+    return datetime.fromisoformat(value)
+
 def get_datetime_prompt() -> str:
     now = datetime.now(ZoneInfo("America/Sao_Paulo"))
     return f"""
@@ -78,6 +99,27 @@ Timezone: America/Sao_Paulo.
 The user is in Brazil.
     """
 
+async def get_time_difference_prompt(user_id: int) -> str:
+    message_datetime_string = await get_user_last_message_at(user_id)
+    message_datetime = parse_api_datetime(message_datetime_string)
+    now = datetime.now(timezone.utc)
+    time_difference = now - message_datetime
+
+    total_seconds = int(time_difference.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+
+    if hours == 0:
+        human_delta = f"{minutes} minutes"
+    elif minutes == 0:
+        human_delta = f"{hours} hours"
+    else:
+        human_delta = f"{hours} hours and {minutes} minutes"
+
+    return f"""The user's last message was sent about {human_delta} ago.
+
+Treat this as real elapsed time. Mention the time gap only if it feels natural in the conversation.
+"""
 
 async def regenerate_response(user_id: int, chat_id: str, system_prompt: Optional[str]):
     """
@@ -135,10 +177,13 @@ async def stream_response(
 
     long_term_memory_prompt = os.environ.get("DEFAULT_LONG_TERM_MEMORY_PROMPT")
     datetime_prompt = get_datetime_prompt()
+    time_difference_prompt = await get_time_difference_prompt(user_id)
 
     prompt = f"""
     [Runtime Context]
     {datetime_prompt}
+    
+    {time_difference_prompt}
     
     [System Prompt]
     {system_prompt}
@@ -213,9 +258,7 @@ async def stream_response(
     )
 
     # Update relationship
-    print(f"before evaluate: '{relationship}'", flush=True)
-    updated_relationship = await _relationship_service.evaluate_and_save(user_id, message, full_response)
-    print(f"after evaluate: '{updated_relationship}'", flush=True)
+    await _relationship_service.evaluate_and_save(user_id, message, full_response)
 
 
 @app.on_event('startup')
