@@ -69,6 +69,17 @@ class UserView(APIView):
 
 class UserLastMessageAtView(APIView):
     def get(self, request):
+        user_id = request.query_params.get('user_id')
+        user = User.objects.filter(id=user_id).first()
+
+        if user is None:
+            return Response({"error": "User not found"}, status=404)
+
+        return Response({"last_message_at": user.last_message_at})
+
+
+class UsersLastMessageAtView(APIView):
+    def get(self, request):
         users = User.objects.filter(last_message_at__isnull=False)
 
         return Response([

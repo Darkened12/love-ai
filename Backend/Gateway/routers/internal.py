@@ -39,6 +39,15 @@ async def create_chat_title(request: Request):
     )
 
 
+@router.get("/get_user_last_message_at")
+async def get_user_last_message_at(request: Request):
+    user_id = request.query_params.get('user_id')
+    if user_id is None:
+        return Response({"error": "user_id is required"}, status_code=400)
+
+    return await forward_request(request, f"{DJANGO_URL}/users/get_user_last_message_at/?user_id={user_id}")
+
+
 @router.get("/get_users_last_message_at")
-async def get_last_message_at(request: Request):
+async def get_users_last_message_at(request: Request):
     return await forward_request(request, f"{DJANGO_URL}/users/get_users_last_message_at/")
