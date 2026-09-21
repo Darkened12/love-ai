@@ -28,19 +28,19 @@ export class InputComponent {
     )
   }
 
-  onEnter(event: KeyboardEvent) {
-    event.preventDefault();
+  handleEnter(event: Event) {
+    const keyboardEvent = event as KeyboardEvent;
 
-    if (!this.chatId()) {
-      return
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      return;
     }
 
-    this.isStreaming$.pipe(take(1)).subscribe(isStreaming => {
-      if (!isStreaming) {
-        this.handleSend();
-      }
-    });
-  } 
+    if (keyboardEvent.shiftKey) {
+      return;
+    }
+
+    this.handleSend(event);
+  }
 
   handleSend(event?: Event) {
     event?.preventDefault();
@@ -48,10 +48,17 @@ export class InputComponent {
     const chatId = this.chatId();
     const userProfile = this.userProfile();
 
-    if (!this.message.trim()  || !chatId) return;
-    if (!userProfile) return;
+    if (!this.message.trim() || !chatId || !userProfile) {
+      return;
+    }
 
-    this.chatService.sendMessage(userProfile?.id, chatId, this.message, userProfile?.system_prompt);
+    this.chatService.sendMessage(
+      userProfile.id,
+      chatId,
+      this.message,
+      userProfile.system_prompt
+    );
+
     this.message = '';
   }
 }

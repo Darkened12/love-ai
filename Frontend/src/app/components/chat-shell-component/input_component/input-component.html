@@ -2,7 +2,7 @@
     <div class="col">
       <textarea
          [(ngModel)]="message" 
-         (keydown.enter)="handleSend($event)"
+         (keydown.enter)="handleEnter($event)"
          class="form-control"
          [disabled]="!chatId() || (isStreaming$ | async) === true"
       ></textarea>
