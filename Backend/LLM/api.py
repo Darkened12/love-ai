@@ -1,17 +1,15 @@
 import asyncio
 import os
-from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
 
-import httpx
 from dotenv import load_dotenv
 from pathlib import Path
 from typing import Optional, List
 
-from config import GATEWAY_URL
 from controllers.relationship_controller import RelationshipController
 from models.user_relationship import Base
 from services.relationship import RelationshipService
+from services.gateway_bridge import GatewayBridge
+from services.message_datetime import MessageDatetime
 
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(env_path)
@@ -55,71 +53,6 @@ _relationship_controller = RelationshipController(
 _relationship_service = RelationshipService(llm=_llm, controller=_relationship_controller)
 
 
-async def generate_title(user_id: int, chat_id: str) -> str:
-    title = await _memory_controller.context_memory.generate_chat_title(chat_id)
-    async with httpx.AsyncClient() as client:
-        await client.patch(
-            f'{GATEWAY_URL}/internal/create_chat_title',
-            params={
-                'chat_id': chat_id,
-                "user_id": user_id,
-                "title": title
-            }
-        )
-
-    return title
-
-
-async def get_user_last_message_at(user_id: int) -> str:
-    async with httpx.AsyncClient() as client:
-        response = await client.get(
-            f"{GATEWAY_URL}/internal/get_user_last_message_at",
-            params={
-                "user_id": user_id
-            }
-        )
-
-        content = response.json()
-        return content['last_message_at']
-
-
-def parse_api_datetime(value: str) -> datetime:
-    if value.endswith("Z"):
-        value = value[:-1] + "+00:00"
-    elif value.endswith("+00"):
-        value = value[:-3] + "+00:00"
-
-    return datetime.fromisoformat(value)
-
-def get_datetime_prompt() -> str:
-    now = datetime.now(ZoneInfo("America/Sao_Paulo"))
-    return f"""
-Current date and time: {now.strftime("%A, %B %d, %Y, %H:%M")}.
-Timezone: America/Sao_Paulo.
-The user is in Brazil.
-    """
-
-async def get_time_difference_prompt(user_id: int) -> str:
-    message_datetime_string = await get_user_last_message_at(user_id)
-    message_datetime = parse_api_datetime(message_datetime_string)
-    now = datetime.now(timezone.utc)
-    time_difference = now - message_datetime
-
-    total_seconds = int(time_difference.total_seconds())
-    hours = total_seconds // 3600
-    minutes = (total_seconds % 3600) // 60
-
-    if hours == 0:
-        human_delta = f"{minutes} minutes"
-    elif minutes == 0:
-        human_delta = f"{hours} hours"
-    else:
-        human_delta = f"{hours} hours and {minutes} minutes"
-
-    return f"""The user's last message was sent about {human_delta} ago.
-
-Treat this as real elapsed time. Mention the time gap only if it feels natural in the conversation.
-"""
 
 async def regenerate_response(user_id: int, chat_id: str, system_prompt: Optional[str]):
     """
@@ -176,8 +109,8 @@ async def stream_response(
         system_prompt = os.environ.get("DEFAULT_SYSTEM_PROMPT")
 
     long_term_memory_prompt = os.environ.get("DEFAULT_LONG_TERM_MEMORY_PROMPT")
-    datetime_prompt = get_datetime_prompt()
-    time_difference_prompt = await get_time_difference_prompt(user_id)
+    datetime_prompt = MessageDatetime.get_datetime_prompt()
+    time_difference_prompt = await MessageDatetime.get_time_difference_prompt(user_id)
 
     prompt = f"""
     [Runtime Context]
@@ -231,7 +164,7 @@ async def stream_response(
 
         history = await _memory_controller.context_memory.get_message_history(chat_id)
         if len(history) == 2:
-            title = await generate_title(user_id, chat_id)
+            title = await GatewayBridge.generate_title(_memory_controller.context_memory, user_id, chat_id)
             yield f"__TITLE__:{title}"
     else:
         async for chunk in _memory_controller.chain.astream(
@@ -249,7 +182,7 @@ async def stream_response(
 
         history = await _memory_controller.context_memory.get_message_history(chat_id)
         if len(history) == 2:
-            title = await generate_title(user_id, chat_id)
+            title = await GatewayBridge.generate_title(_memory_controller.context_memory, user_id, chat_id)
             yield f"__TITLE__:{title}"
 
     # Store persistent memory automatically
