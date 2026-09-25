@@ -1,5 +1,5 @@
 import httpx
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from routers.auth import router as auth_router
@@ -8,6 +8,7 @@ from routers.chats import router as chats_router
 from routers.users import router as users_router
 from routers.internal import router as internal_router
 from services.route_forwarding import forward_request
+from services.jwt_decoding import decode_token
 from config import DJANGO_URL
 from connection_manager import connections
 
@@ -54,8 +55,22 @@ async def get_user(request: Request):
     return await forward_request(request, f'{DJANGO_URL}/auth/user/')
 
 
-@app.websocket("/ws/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: int):
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    token = websocket.query_params.get("token")
+
+    if not token:
+        await websocket.close(code=1008)  # Policy Violation
+        return
+
+    try:
+        payload = decode_token(token)
+    except HTTPException:
+        await websocket.close(code=1008)
+        return
+
+    user_id = payload["user_id"]
+
     await websocket.accept()
     connections[user_id] = websocket
 
@@ -65,7 +80,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
 
             if message["type"] == "websocket.disconnect":
                 break
-
     finally:
         if connections.get(user_id) is websocket:
             connections.pop(user_id)
