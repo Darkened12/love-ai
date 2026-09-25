@@ -1,10 +1,11 @@
 from django.urls import path
 from chats.views import ChatCreationView, ChatListView, ChatTitleCreationView, ChatDateUpdate, ChatDeleteView, \
-    CheckChatOwnership, ChatRenameView
+    CheckChatOwnership, ChatRenameView, LastChatView
 
 urlpatterns = [
     path("create_chat/", ChatCreationView.as_view()),
     path("get_chats_list/", ChatListView.as_view()),
+    path("get_last_chat/", LastChatView.as_view()),
     path("create_chat_title/", ChatTitleCreationView.as_view()),
     path("update_chat_date/", ChatDateUpdate.as_view()),
     path("rename_chat_title/", ChatRenameView.as_view()),

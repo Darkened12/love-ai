@@ -3,6 +3,8 @@ from fastapi import APIRouter, Request, Response
 from config import DJANGO_URL
 from dependencies import get_client
 from services.route_forwarding import forward_request
+from models import ReplyRequest
+from connection_manager import connections
 
 router = APIRouter(prefix="/internal")
 
@@ -51,3 +53,35 @@ async def get_user_last_message_at(request: Request):
 @router.get("/get_users_last_message_at")
 async def get_users_last_message_at(request: Request):
     return await forward_request(request, f"{DJANGO_URL}/users/get_users_last_message_at/")
+
+@router.get("/get_last_chat")
+async def get_users_last_message_at(request: Request):
+    user_id = request.query_params.get('user_id')
+    if user_id is None:
+        return Response({"error": "user_id is required"}, status_code=400)
+
+    return await forward_request(request, f"{DJANGO_URL}/chats/get_last_chat/?user_id={user_id}")
+
+
+@router.post("/reply")
+async def receive_reply(data: ReplyRequest):
+    websocket = connections.get(data.user_id)
+
+    if websocket is None:
+        return {"status": "user_offline"}
+
+    try:
+        await websocket.send_json({
+            "type": "message",
+            "chat_id": data.chat_id,
+            "message": data.message,
+        })
+    except RuntimeError:
+        if connections.get(data.user_id) is websocket:
+            connections.pop(data.user_id)
+
+        return {"status": "user_offline"}
+
+    return {"status": "sent"}
+
+

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from .models import Chat
+from users.models import User
 
 
 class ChatCreationView(APIView):
@@ -34,6 +35,52 @@ class ChatTitleCreationView(APIView):
         chat.title = title
         chat.save()
         return Response(status=200)
+
+
+class LastChatView(APIView):
+
+    def get(self, request):
+        user_id = request.query_params.get("user_id")
+
+        if not user_id:
+            return Response(
+                {"error": "user_id is required"},
+                status=400
+            )
+
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            return Response(
+                {"error": "user_id must be an integer"},
+                status=400
+            )
+
+        user = User.objects.filter(id=user_id).first()
+
+        if user is None:
+            return Response(
+                {"error": "User not found"},
+                status=404
+            )
+
+        chat = (
+            user.chats
+            .order_by("-last_updated_at")
+            .values("id")
+            .first()
+        )
+
+        if chat is None:
+            return Response(
+                {"error": "User has no chats"},
+                status=404
+            )
+
+        return Response({
+            "chat_id": chat["id"],
+            "last_message_at": user.last_message_at
+        })
 
 
 class ChatListView(APIView):

@@ -10,6 +10,8 @@ from models.user_relationship import Base
 from services.relationship import RelationshipService
 from services.gateway_bridge import GatewayBridge
 from services.message_datetime import MessageDatetime
+from services.reply_scheduler import ReplyScheduler
+from services.reply_worker import ReplyWorker
 
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(env_path)
@@ -52,7 +54,10 @@ _relationship_controller = RelationshipController(
 )
 _relationship_service = RelationshipService(llm=_llm, controller=_relationship_controller)
 
-
+_reply_scheduler = ReplyScheduler(ReplyWorker(
+    context_memory=_memory_controller.context_memory,
+    llm=_llm
+))
 
 async def regenerate_response(user_id: int, chat_id: str, system_prompt: Optional[str]):
     """
@@ -198,6 +203,7 @@ async def stream_response(
 async def startup():
     await _memory_controller.context_memory.init()
     await _relationship_controller.init()
+    asyncio.create_task(_reply_scheduler.run())
 
 
 # ---- Routes ----

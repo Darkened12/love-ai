@@ -27,3 +27,9 @@ class RegenerateMessageResponse(BaseModel):
     user_id: int
     chat_id: str
     system_prompt: Optional[str] = None
+
+
+class ReplyRequest(BaseModel):
+    user_id: int
+    chat_id: str
+    message: str

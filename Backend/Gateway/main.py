@@ -1,5 +1,5 @@
 import httpx
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from routers.auth import router as auth_router
@@ -9,6 +9,7 @@ from routers.users import router as users_router
 from routers.internal import router as internal_router
 from services.route_forwarding import forward_request
 from config import DJANGO_URL
+from connection_manager import connections
 
 app = FastAPI(
     title='Microservices Gateway/BFF',
@@ -51,6 +52,23 @@ async def root():
 @app.get('/user')
 async def get_user(request: Request):
     return await forward_request(request, f'{DJANGO_URL}/auth/user/')
+
+
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
+    await websocket.accept()
+    connections[user_id] = websocket
+
+    try:
+        while True:
+            message = await websocket.receive()
+
+            if message["type"] == "websocket.disconnect":
+                break
+
+    finally:
+        if connections.get(user_id) is websocket:
+            connections.pop(user_id)
 
 
 @app.on_event("shutdown")
