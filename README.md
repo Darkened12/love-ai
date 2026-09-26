@@ -4,6 +4,7 @@ Love-AI is a personal AI companion application focused on creating a more natura
 
 ## Features
 - Long-term memory (RAG)
+- Websocket-based automatic reply
 - Date-aware conversations
 - Internal relationship system
 - Multiple conversations with independent histories
