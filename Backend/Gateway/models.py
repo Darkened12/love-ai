@@ -32,4 +32,7 @@ class RegenerateMessageResponse(BaseModel):
 class ReplyRequest(BaseModel):
     user_id: int
     chat_id: str
+    role: str
+    message_id: int
     message: str
+    timestamp: str

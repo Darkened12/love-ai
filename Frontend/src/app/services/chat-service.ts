@@ -173,6 +173,10 @@ export class ChatService {
     );
   }
 
+  appendMessage(message: Message) {
+    this.messagesSubject.next([...this.messagesSubject.value, message])
+  }
+
   deleteChat(chatId: string): Observable<void> {
     return this.auth.ensureAccessToken().pipe(
       switchMap(token => {

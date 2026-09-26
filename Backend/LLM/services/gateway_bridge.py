@@ -1,6 +1,7 @@
 import httpx
 from services.context_memory import ContextMemory
 from config import GATEWAY_URL
+from datetime import datetime
 
 class GatewayBridge:
     @staticmethod
@@ -49,11 +50,28 @@ class GatewayBridge:
 
             return response.json()
 
+
+    @staticmethod
+    async def update_chat_date(user_id: int, chat_id: str):
+        async with httpx.AsyncClient() as client:
+            response = await client.patch(
+                f"{GATEWAY_URL}/internal/update_chat_date",
+                params={
+                    "user_id": user_id,
+                    "chat_id": chat_id
+                }
+            )
+
+            return response
+
     @staticmethod
     async def reply(
             user_id: int,
             chat_id: str,
-            message: str
+            role: str,
+            message_id: int,
+            message: str,
+            timestamp: datetime
     ):
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -61,7 +79,10 @@ class GatewayBridge:
                 json={
                     "user_id": user_id,
                     "chat_id": chat_id,
-                    "message": message
+                    "role": role,
+                    "message_id": message_id,
+                    "message": message,
+                    "timestamp": timestamp
                 }
             )
 

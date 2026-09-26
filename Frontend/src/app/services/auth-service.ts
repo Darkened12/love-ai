@@ -17,6 +17,7 @@ import { LoginForm } from '../models/login-form-model';
 import { Chat } from '../models/chat-model';
 import { Router } from '@angular/router';
 import { URLS } from '../config/api';
+import { WebsocketsService } from './websockets-service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,7 @@ export class AuthService {
   private refreshInFlight$: Observable<string | null> | null = null;
   baseURL = URLS.auth;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private websockets: WebsocketsService) {}
 
   initAuth(): Observable<void> {
     return this.ensureAccessToken().pipe(map(() => void 0));
@@ -99,6 +100,7 @@ export class AuthService {
   }
 
   logout() {
+    this.websockets.disconnect();
     this.accessToken = null;
     this.refreshToken = null;
     localStorage.removeItem('refresh_token');

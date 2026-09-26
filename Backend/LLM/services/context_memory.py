@@ -1,10 +1,10 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 from uuid import uuid4
 
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, message_to_dict
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from sqlalchemy import text
@@ -49,6 +49,15 @@ class ContextMemory:
         async with self.engine.begin() as conn:
             await conn.run_sync(message_table.create, checkfirst=True)
 
+    @staticmethod
+    def parse_api_datetime(value: str) -> datetime:
+        if value.endswith("Z"):
+            value = value[:-1] + "+00:00"
+        elif value.endswith("+00"):
+            value = value[:-3] + "+00:00"
+
+        return datetime.fromisoformat(value)
+
     async def get_message_history(self, session_id: str) -> List[MessageResponse]:
         async with self.engine.begin() as conn:
             result = await conn.execute(
@@ -67,7 +76,6 @@ class ContextMemory:
 
         for row in rows:
             raw = row.message
-
             # LangChain stores either dict or JSON string depending on version
             if isinstance(raw, str):
                 data = json.loads(raw)
@@ -85,7 +93,14 @@ class ContextMemory:
                 continue
 
             additional_kwargs = data.get("data", {}).get("additional_kwargs", {})
-            timestamp = additional_kwargs.get("timestamp", datetime.now())
+
+            raw_timestamp = additional_kwargs.get("timestamp")
+
+            timestamp = (
+                self.parse_api_datetime(raw_timestamp)
+                if raw_timestamp
+                else datetime.now(timezone.utc)
+            )
 
             messages.append(
                 MessageResponse(
@@ -99,7 +114,13 @@ class ContextMemory:
         messages.sort(key=lambda x: x.timestamp)
         return messages
 
-    async def append_message(self, session_id: str, role: str, content: str):
+    async def append_message(
+            self,
+            session_id: str,
+            role: str,
+            content: str,
+    ) -> MessageResponse:
+        """Glue method. Should not go to production. Must be rewritten"""
         message_history = SQLChatMessageHistory(
             session_id=session_id,
             connection=self.engine,
@@ -113,6 +134,45 @@ class ContextMemory:
             raise ValueError("Invalid role")
 
         await message_history.aadd_message(msg)
+
+        async with self.engine.connect() as conn:
+            result = await conn.execute(
+                text("""
+                    SELECT id
+                    FROM message_store
+                    WHERE session_id = :session_id
+                    ORDER BY id DESC
+                    LIMIT 1
+                """),
+                {"session_id": session_id},
+            )
+
+            message_id = result.scalar_one()
+
+        return MessageResponse(
+            id=message_id,
+            role=role,
+            content=content,
+            timestamp=datetime.now(timezone.utc),
+        )
+
+
+    # async def append_message(self, session_id: str, role: str, content: str) -> HumanMessage | AIMessage:
+    #     message_history = SQLChatMessageHistory(
+    #         session_id=session_id,
+    #         connection=self.engine,
+    #     )
+    #
+    #     if role == "user":
+    #         msg = HumanMessage(content=content)
+    #     elif role == "assistant":
+    #         msg = AIMessage(content=content)
+    #     else:
+    #         raise ValueError("Invalid role")
+    #
+    #     await message_history.aadd_message(msg)
+    #     return msg
+
 
     async def delete_last_entry(self, session_id: str):
         async with self.engine.begin() as conn:

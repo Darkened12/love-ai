@@ -74,7 +74,10 @@ async def receive_reply(data: ReplyRequest):
         await websocket.send_json({
             "type": "message",
             "chat_id": data.chat_id,
+            "role": data.role,
+            "message_id": data.message_id,
             "message": data.message,
+            "timestamp": data.timestamp
         })
     except RuntimeError:
         if connections.get(data.user_id) is websocket:
@@ -83,5 +86,19 @@ async def receive_reply(data: ReplyRequest):
         return {"status": "user_offline"}
 
     return {"status": "sent"}
+
+
+@router.patch("/update_chat_date")
+async def update_chat_date(request: Request):
+    chat_id = request.query_params.get('chat_id')
+    user_id = request.query_params.get('user_id')
+
+    if chat_id is None:
+        return Response({'error': 'missing chat_id'}, status_code=400)
+    if user_id is None:
+        return Response({'error': 'missing user_id'}, status_code=400)
+
+    return await forward_request(request,
+                                 f"{DJANGO_URL}/chats/update_chat_date/?user_id={user_id}&chat_id={chat_id}")
 
 

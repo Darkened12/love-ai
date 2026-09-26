@@ -136,17 +136,22 @@ class ChatDeleteView(APIView):
 
 
 class ChatDateUpdate(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def patch(self, request):
+        user_id = request.query_params.get('user_id')
         chat_id = request.query_params.get("chat_id")
 
         if not chat_id:
             return Response({"error": "chat_id is required"}, status=400)
+        if not user_id:
+            return Response({"error": "user_id is required"}, status=400)
 
-        user = request.user
+        user = User.objects.filter(id=int(user_id)).first()
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
         chat = user.chats.filter(id=chat_id).first()
-
         if not chat:
             return Response({"error": "Chat not found"}, status=404)
 

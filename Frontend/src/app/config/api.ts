@@ -1,8 +1,9 @@
-export const BASE_URL = "http://192.168.0.50:8000";
+export const BASE_IP = "192.168.0.50:8000";
 
 export const URLS = {
-    auth: `${BASE_URL}/auth`,
-    chats: `${BASE_URL}/chats`,
-    users: `${BASE_URL}/users`,
-    llm: `${BASE_URL}/llm`
+    auth: `http://${BASE_IP}/auth`,
+    chats: `http://${BASE_IP}/chats`,
+    users: `http://${BASE_IP}/users`,
+    llm: `http://${BASE_IP}/llm`,
+    ws: `ws://${BASE_IP}/ws`
 };

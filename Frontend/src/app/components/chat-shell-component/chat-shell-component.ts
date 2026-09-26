@@ -13,6 +13,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChatService } from '../../services/chat-service';
 import { ChatDeleteModalComponent } from './chat-delete-modal-component/chat-delete-modal-component';
 import { ChatRenameModalComponent } from './chat-rename-modal-component/chat-rename-modal-component';
+import { WebsocketsService } from '../../services/websockets-service';
+import { WebsocketsMessage } from '../../models/websockets-message-model';
 
 @Component({
   selector: 'app-chat-shell-component',
@@ -49,7 +51,8 @@ export class ChatShellComponent implements AfterViewInit {
   constructor(
       private userService: UserService,
       private injector: Injector,
-      private chatService: ChatService
+      private chatService: ChatService,
+      private websockets: WebsocketsService,
     ) {
     this.chatService.chatId$.pipe(takeUntilDestroyed()).subscribe(
       chatId => this.chatId.next(chatId)
@@ -58,6 +61,18 @@ export class ChatShellComponent implements AfterViewInit {
     this.chatService.chats$.pipe(takeUntilDestroyed()).subscribe(
       chats => this.chatsList.next(chats)
     );
+
+    this.websockets.message$.subscribe(
+      (message: WebsocketsMessage) => { 
+        this.chatId.next(message.chat_id);
+        this.chatService.appendMessage({
+          id: message.message_id,
+          role: message.role,
+          content: message.message,
+          timestamp: message.timestamp
+        })
+      }
+    )
   }
 
   openDeleteModal(chat: Chat) {

@@ -32,7 +32,8 @@ async def update_chat_date(request: Request, user=Depends(jwt_decode)):
     if chat_id is None:
         return Response(status_code=400)
 
-    return await forward_request(request, f"{DJANGO_URL}/chats/update_chat_date/?chat_id={chat_id}")
+    return await forward_request(request,
+                                 f"{DJANGO_URL}/chats/update_chat_date/?user_id={user['user_id']}&chat_id={chat_id}")
 
 
 @router.patch("/rename_chat_title")
