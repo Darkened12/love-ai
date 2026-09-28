@@ -12,6 +12,7 @@ from services.gateway_bridge import GatewayBridge
 from services.message_datetime import MessageDatetime
 from services.reply_scheduler import ReplyScheduler
 from services.reply_worker import ReplyWorker
+from services.follow_up import FollowUp
 
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(env_path)
@@ -54,10 +55,12 @@ _relationship_controller = RelationshipController(
 )
 _relationship_service = RelationshipService(llm=_llm, controller=_relationship_controller)
 
-_reply_scheduler = ReplyScheduler(ReplyWorker(
+_reply_worker = ReplyWorker(
     context_memory=_memory_controller.context_memory,
     llm=_llm
-))
+)
+_reply_scheduler = ReplyScheduler(_reply_worker)
+_follow_up_service = FollowUp(_reply_worker)
 
 async def regenerate_response(user_id: int, chat_id: str, system_prompt: Optional[str]):
     """
@@ -197,6 +200,9 @@ async def stream_response(
 
     # Update relationship
     await _relationship_service.evaluate_and_save(user_id, message, full_response)
+
+    # Send a follow up based on chance
+    await _follow_up_service.process_user(user_id)
 
 
 @app.on_event('startup')

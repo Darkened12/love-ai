@@ -99,7 +99,7 @@ Message:
         try:
             data = json.loads(facts)
         except json.JSONDecodeError:
-            print("Invalid JSON returned by LLM.", flush=True)
+            print("Invalid JSON returned by LLM: ", facts, flush=True)
             return
 
         for category, values in data.items():
